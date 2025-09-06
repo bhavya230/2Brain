@@ -1,8 +1,11 @@
 import express from "express";
-import { UsersModel } from "./db";
+import { ContentModel, UsersModel } from "./db";
 import jwt from "jsonwebtoken";
+import { JWT_SECRET_KEY } from "./config";
+import { auth } from "./middleware";
+
 const app= express();
-const JWT_SECRET_KEY="123"
+
 
 app.use(express.json());
 
@@ -46,7 +49,7 @@ app.post('/api/v1/signin',async (req,res)=>{
 
         //genertaimg and sending token
         const token= jwt.sign({
-            id:user._id
+            id:user._id.toString()
         },JWT_SECRET_KEY)
 
         return res.json({
@@ -60,10 +63,33 @@ app.post('/api/v1/signin',async (req,res)=>{
 })
 
 //add new content 
-app.post('/api/v1/content',(req,res)=>{})
+app.post('/api/v1/content',auth,async (req,res)=>{
+    const link=req.body.link;
+    const title=req.body.title;
+    
+    await ContentModel.create({
+        link,
+        title,
+        userId:req.userId,
+        tags:[]
+    })
+
+   res.json({
+    msg:"content added"
+   })
+})
 
 // fetching existing content
-app.get('/api/v1/content',(req,res)=>{})
+app.get('/api/v1/content',auth,async (req,res)=>{
+    const userId=req.userId;
+    const content= await ContentModel.find({
+        userId,
+    }).populate("userId","username")
+
+    res.json({
+        content
+    })
+})
 
 //delete content
 app.delete('/api/v1/content',(req,res)=>{})
