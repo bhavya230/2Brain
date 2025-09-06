@@ -1,11 +1,6 @@
 import mongoose  from "mongoose";
-import 'dotenv/config'
+import { MONGO_URL } from "./config";
 const Schema=mongoose.Schema;
-const MONGO_URL=process.env.MONGO_URL;
-
-if(!MONGO_URL){
-    throw new Error("mongo url undefined")
-}
 
 mongoose.connect(MONGO_URL);
 const ObjectId= mongoose.Types.ObjectId;
