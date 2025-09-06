@@ -10,10 +10,26 @@ if(!MONGO_URL){
 mongoose.connect(MONGO_URL);
 const ObjectId= mongoose.Types.ObjectId;
 
-//creating mongoose schemas
-const Users=new Schema({
+//creating mongoose schemas-------
+
+//USER SCHEMA
+const UsersSchema=new Schema({
     username:{type:String,unique:true},
     password:String 
 })
+export const UsersModel=mongoose.model("users",UsersSchema);
 
-export const UsersModel=mongoose.model("users",Users);
+//TAG SCHEMA
+const TagSchema=new Schema({
+    title:String
+})
+export const TagModel=mongoose.model("tag",TagSchema);
+
+//CONTENT SCHEMA
+const ContentSchema= new Schema({
+    title:String,
+    link:String,
+    tags:[{type:ObjectId, ref:"tag"}],
+    userId:{type:ObjectId , ref:"users", required:true}
+})
+export const ContentModel=mongoose.model("content",ContentSchema);
